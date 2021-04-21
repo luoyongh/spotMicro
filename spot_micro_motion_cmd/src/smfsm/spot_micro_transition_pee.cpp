@@ -1,20 +1,20 @@
-#include "spot_micro_transition_stand.h"
+#include "spot_micro_transition_pee.h"
 
-#include "spot_micro_stand.h"
+#include "spot_micro_pee.h"
 #include "spot_micro_motion_cmd.h"
 #include "spot_micro_state.h"
 
-SpotMicroTransitionStandState::SpotMicroTransitionStandState() {
+SpotMicroTransitionPeeState::SpotMicroTransitionPeeState() {
   // Construcotr, doesn't need to do anything, for now...
-  //std::cout << "SpotMicroTransitionStandState Ctor" << std::endl;
+  //std::cout << "SpotMicroTransitionPeeState Ctor" << std::endl;
 }
 
-SpotMicroTransitionStandState::~SpotMicroTransitionStandState() {
-  //std::cout << "SpotMicroTransitionStandState Dtor" << std::endl;
+SpotMicroTransitionPeeState::~SpotMicroTransitionPeeState() {
+  //std::cout << "SpotMicroTransitionPeeState Dtor" << std::endl;
 }
 
 
-void SpotMicroTransitionStandState::init(const smk::BodyState& body_state,
+void SpotMicroTransitionPeeState::init(const smk::BodyState& body_state,
                                          const SpotMicroNodeConfig& smnc,
                                          const Command& cmd,
                                          SpotMicroMotionCmd* smmc) {
@@ -24,7 +24,7 @@ void SpotMicroTransitionStandState::init(const smk::BodyState& body_state,
  
   // Create end state 
   // Create end state feet positions, a default foot stance
-  end_body_state_.leg_feet_pos = smmc->getNeutralStance();
+  end_body_state_.leg_feet_pos = smmc->getPeeStance();
 
   // End body state position and angles
   end_body_state_.euler_angs.phi = 0.0f;
@@ -49,19 +49,19 @@ void SpotMicroTransitionStandState::init(const smk::BodyState& body_state,
 }
 
 
-void SpotMicroTransitionStandState::handleInputCommands(
+void SpotMicroTransitionPeeState::handleInputCommands(
                                    const smk::BodyState& body_state,
                                    const SpotMicroNodeConfig& smnc,
                                    const Command& cmd,
                                    SpotMicroMotionCmd* smmc,
                                    smk:: BodyState* body_state_cmd) {
   if (smnc.debug_mode) {
-    std::cout << "In Spot Micro Transition Stand State" << std::endl;
+    std::cout << "In Spot Micro Transition Pee State" << std::endl;
   }
   
   // Check if desired end state reached, if so, change to stand state
   if (checkBodyStateEquality(body_state, end_body_state_, 0.001f)) {
-    changeState(smmc, std::make_unique<SpotMicroStandState>());
+    changeState(smmc, std::make_unique<SpotMicroPeeState>());
   
   } else {
     // Otherwise, rise filters and assign output values to body state command

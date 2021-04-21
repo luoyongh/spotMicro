@@ -38,7 +38,7 @@ void SpotMicroWalkState::handleInputCommands(const smk::BodyState& body_state,
     changeState(smmc, std::make_unique<SpotMicroTransitionStandState>());
 
   } else {
-    // Update gate phasing data
+    // Update gait phasing data
     updatePhaseData();
 
     // Step the gait controller

@@ -12,7 +12,8 @@ class SpotMicroJoystickControl():
     BUTTON_IDLE = 0
     BUTTON_WALK = 1
     BUTTON_STAND = 2
-    BUTTON_ANGLE = 3
+    BUTTON_PEE = 3
+    BUTTON_ANGLE = 4
 
     ANGLE_AXES_ROLL = 0
     ANGLE_AXES_HEIGHT = 1
@@ -27,6 +28,7 @@ class SpotMicroJoystickControl():
     MODE_STAND = 1
     MODE_ANGLE = 2
     MODE_WALK = 3
+    MODE_PEE = 4
 
     MAX_ROLL_DEG = 45
     MAX_YAW_DEG = 45
@@ -54,6 +56,9 @@ class SpotMicroJoystickControl():
         self._walk_event_cmd_msg = Bool()
         self._walk_event_cmd_msg.data = True  # Mostly acts as an event driven action on receipt of a true message
 
+        self._pee_event_cmd_msg = Bool()
+        self._pee_event_cmd_msg.data = True
+
         self._stand_event_cmd_msg = Bool()
         self._stand_event_cmd_msg.data = True
 
@@ -68,6 +73,8 @@ class SpotMicroJoystickControl():
         # Create publishers for commanding velocity, angle, and robot states
         self._ros_pub_angle_cmd = rospy.Publisher('/angle_cmd', Vector3, queue_size=1)
         self._ros_pub_vel_cmd = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
+        self._ros_pub_pee_cmd = rospy.Publisher('/pee_cmd', Bool, queue_size=1)
+        self._ros_pub_stand_cmd = rospy.Publisher('/stand_cmd', Bool, queue_size=1)
         self._ros_pub_walk_cmd = rospy.Publisher('/walk_cmd', Bool, queue_size=1)
         self._ros_pub_stand_cmd = rospy.Publisher('/stand_cmd', Bool, queue_size=1)
         self._ros_pub_idle_cmd = rospy.Publisher('/idle_cmd', Bool, queue_size=1)
@@ -117,6 +124,11 @@ class SpotMicroJoystickControl():
             self._ros_pub_walk_cmd.publish(self._walk_event_cmd_msg)
             rospy.loginfo('Entering joystick walk command mode.')
             self.mode = self.MODE_WALK
+        elif buttons[self.BUTTON_PEE] == 1:
+            self.reset_all_angle_commands_to_zero()
+            self._ros_pub_pee_cmd.publish(self._pee_event_cmd_msg)
+            rospy.loginfo('Entering joystick pee command mode.')
+            self.mode = self.MODE_PEE
 
     def on_joy_axes(self, axes):
         if self.mode == self.MODE_ANGLE:

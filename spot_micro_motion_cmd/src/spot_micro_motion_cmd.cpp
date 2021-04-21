@@ -81,6 +81,9 @@ SpotMicroMotionCmd::SpotMicroMotionCmd(ros::NodeHandle &nh, ros::NodeHandle &pnh
   // walk cmd event subscriber
   walk_sub_ = nh.subscribe("/walk_cmd", 1, &SpotMicroMotionCmd::walkCommandCallback, this);
 
+  // pee cmd event subscriber
+  pee_sub_ = nh.subscribe("/pee_cmd", 1, &SpotMicroMotionCmd::peeCommandCallback, this);
+
   // body angle command subscriber
   body_angle_cmd_sub_ = nh.subscribe("/angle_cmd", 1, &SpotMicroMotionCmd::angleCommandCallback, this);  
 
@@ -289,7 +292,7 @@ SpotMicroNodeConfig SpotMicroMotionCmd::getNodeConfig() {
 LegsFootPos SpotMicroMotionCmd::getNeutralStance() {
   float len = smnc_.smc.body_length; // body length
   float width = smnc_.smc.body_width; // body width
-  float l1 = smnc_.smc.hip_link_length; // liength of the hip link
+  float l1 = smnc_.smc.hip_link_length; // length of the hip link
   float f_offset = smnc_.stand_front_x_offset; // x offset for front feet in neutral stance
   float b_offset = smnc_.stand_back_x_offset; // y offset for back feet in neutral stance
 
@@ -318,6 +321,25 @@ LegsFootPos SpotMicroMotionCmd::getLieDownStance() {
   return lie_down_stance;
 }
 
+LegsFootPos SpotMicroMotionCmd::getPeeStance() {
+  float len = smnc_.smc.body_length; // body length
+  float width = smnc_.smc.body_width; // body width
+  float l1 = smnc_.smc.hip_link_length; // length of the hip link
+  float f_offset = smnc_.stand_front_x_offset; // x offset for front feet in neutral stance
+  float b_offset = smnc_.stand_back_x_offset; // y offset for back feet in neutral stance
+  float pee_x_offset = smnc_.pee_x_offset;
+  float pee_y_offset = smnc_.pee_y_offset;
+  float pee_z_offset = smnc_.pee_z_offset;
+
+  LegsFootPos pee_stance;
+  pee_stance.right_back  = {.x = -len/2 + b_offset, .y = 0.0f, .z =  width/2 + l1};
+  pee_stance.right_front = {.x =  len/2 + f_offset, .y = 0.0f, .z =  width/2 + l1};
+  pee_stance.left_front  = {.x =  len/2 + f_offset, .y = 0.0f, .z = -width/2 - l1};
+  pee_stance.left_back   = {.x = -len/2 + b_offset - pee_x_offset, .y = pee_y_offset, .z = -width/2 - l1 - pee_z_offset};
+
+  return pee_stance;
+}
+
 
 void SpotMicroMotionCmd::commandIdle() {
   cmd_.idle_cmd_ = true;
@@ -344,6 +366,9 @@ void SpotMicroMotionCmd::readInConfigParameters() {
   pnh_.getParam("stand_back_x_offset", smnc_.stand_back_x_offset);
   pnh_.getParam("lie_down_height", smnc_.lie_down_height);
   pnh_.getParam("lie_down_foot_x_offset", smnc_.lie_down_feet_x_offset);
+  pnh_.getParam("pee_x_offset", smnc_.pee_x_offset);
+  pnh_.getParam("pee_y_offset", smnc_.pee_y_offset);
+  pnh_.getParam("pee_z_offset", smnc_.pee_z_offset);
   pnh_.getParam("num_servos", smnc_.num_servos);
   pnh_.getParam("servo_max_angle_deg", smnc_.servo_max_angle_deg);
   pnh_.getParam("transit_tau", smnc_.transit_tau);
@@ -433,6 +458,11 @@ void SpotMicroMotionCmd::idleCommandCallback(
 void SpotMicroMotionCmd::walkCommandCallback(
     const std_msgs::Bool::ConstPtr& msg) {
   if (msg->data == true) {cmd_.walk_cmd_ = true;}
+}
+
+void SpotMicroMotionCmd::peeCommandCallback(
+    const std_msgs::Bool::ConstPtr& msg) {
+  if (msg->data == true) {cmd_.pee_cmd_ = true;}
 }
 
 

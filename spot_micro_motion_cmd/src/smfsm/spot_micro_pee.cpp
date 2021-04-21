@@ -1,41 +1,35 @@
 #include "spot_micro_stand.h"
 
-#include "spot_micro_transition_idle.h"
-#include "spot_micro_transition_pee.h"
+#include "spot_micro_transition_stand.h"
 #include "spot_micro_walk.h"
+#include "spot_micro_pee.h"
 #include "spot_micro_motion_cmd.h"
 #include "rate_limited_first_order_filter.h"
 
-SpotMicroStandState::SpotMicroStandState() {
+SpotMicroPeeState::SpotMicroPeeState() {
   // Construcotr, doesn't need to do anything, for now...
-  //std::cout << "SpotMicroStandState Ctor" << std::endl;
+  //std::cout << "SpotMicroPeeState Ctor" << std::endl;
 }
 
-SpotMicroStandState::~SpotMicroStandState() {
-  //std::cout << "SpotMicroStandState Dtor" << std::endl;
+SpotMicroPeeState::~SpotMicroPeeState() {
+  //std::cout << "SpotMicroPeeState Dtor" << std::endl;
 }
 
-void SpotMicroStandState::handleInputCommands(const smk::BodyState& body_state,
+void SpotMicroPeeState::handleInputCommands(const smk::BodyState& body_state,
                                    const SpotMicroNodeConfig& smnc,
                                    const Command& cmd,
                                    SpotMicroMotionCmd* smmc, 
                                    smk::BodyState* body_state_cmd) {
 
   if (smnc.debug_mode) {
-    std::cout << "In Spot Micro Stand State" << std::endl;
+    std::cout << "In Spot Micro Pee State" << std::endl;
   }
 
   
 
-  if (cmd.getIdleCmd() == true) {
+  if (cmd.getStandCmd() == true) {
     // Call parent class's change state method
-    changeState(smmc, std::make_unique<SpotMicroTransitionIdleState>());
-
-  } else if (cmd.getWalkCmd() == true) {
-    changeState(smmc, std::make_unique<SpotMicroWalkState>());
-
-  } else if (cmd.getPeeCmd() == true) {
-    changeState(smmc, std::make_unique<SpotMicroTransitionPeeState>());
+    changeState(smmc, std::make_unique<SpotMicroTransitionStandState>());
 
   } else {
     // Get command values
@@ -68,12 +62,12 @@ void SpotMicroStandState::handleInputCommands(const smk::BodyState& body_state,
 
 
 
-void SpotMicroStandState::init(const smk::BodyState& body_state,
+void SpotMicroPeeState::init(const smk::BodyState& body_state,
                                const SpotMicroNodeConfig& smnc,
                                const Command& cmd,
                                SpotMicroMotionCmd* smmc) {
   // Set default stance
-  cmd_state_.leg_feet_pos = smmc->getNeutralStance();
+  cmd_state_.leg_feet_pos = smmc->getPeeStance();
 
   // End body state position and angles
   cmd_state_.euler_angs.phi = 0.0f;

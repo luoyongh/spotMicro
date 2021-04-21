@@ -18,6 +18,7 @@ Enter one of the following options:
 quit: stop and quit the program
 walk: Start walk mode and keyboard motion control
 stand: Stand robot up
+pee: pee
 idle: Lay robot down
 angle_cmd: enter angle control mode
 
@@ -41,7 +42,7 @@ Keyboard commands for body motion
 
 CTRL-C to quit
 """
-valid_cmds = ('quit','Quit','walk','stand','idle', 'angle_cmd')
+valid_cmds = ('quit','Quit','walk','stand','pee','idle', 'angle_cmd')
 
 # Global body motion increment values
 speed_inc = 0.02
@@ -67,6 +68,9 @@ class SpotMicroKeyboardControl():
         self._walk_event_cmd_msg = Bool()
         self._walk_event_cmd_msg.data = True # Mostly acts as an event driven action on receipt of a true message
 
+        self._pee_event_cmd_msg = Bool()
+        self._pee_event_cmd_msg.data = True
+
         self._stand_event_cmd_msg = Bool()
         self._stand_event_cmd_msg.data = True
        
@@ -83,6 +87,7 @@ class SpotMicroKeyboardControl():
         self._ros_pub_vel_cmd        = rospy.Publisher('/cmd_vel',Twist,queue_size=1)
         self._ros_pub_walk_cmd       = rospy.Publisher('/walk_cmd',Bool, queue_size=1)
         self._ros_pub_stand_cmd      = rospy.Publisher('/stand_cmd',Bool,queue_size=1)
+        self._ros_pub_pee_cmd        = rospy.Publisher('/pee_cmd', Bool, queue_size=1)
         self._ros_pub_idle_cmd       = rospy.Publisher('/idle_cmd',Bool,queue_size=1)
 
         rospy.loginfo("Keyboard control node publishers corrrectly initialized")
@@ -147,6 +152,11 @@ class SpotMicroKeyboardControl():
                     #Publish idle command event
                     self._ros_pub_idle_cmd.publish(self._idle_event_cmd_msg)
                     rospy.loginfo('Idle command issued from keyboard.')
+
+                elif userInput == 'pee':
+                    #Publish pee command event
+                    self._ros_pub_pee_cmd.publish(self._pee_event_cmd_msg)
+                    rospy.loginfo('Pee command issued from keyboard.')
 
                 elif userInput == 'angle_cmd':
                     # Reset all angle commands
@@ -252,7 +262,6 @@ class SpotMicroKeyboardControl():
                                 self._ros_pub_vel_cmd.publish(self._vel_cmd_msg)
                                 rospy.loginfo('Command issued to zero all rate commands.')
 
-                                
 if __name__ == "__main__":
     smkc     = SpotMicroKeyboardControl()
     smkc.run()

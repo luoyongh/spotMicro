@@ -129,16 +129,18 @@ include_directories(
 
 ## Declare a C++ library
 add_library(smfsm 
-            src/smfsm/spot_micro_state.cpp 
-            src/smfsm/spot_micro_idle.cpp
-            src/smfsm/spot_micro_stand.cpp
-			src/smfsm/spot_micro_transition_stand.cpp
-			src/smfsm/spot_micro_transition_idle.cpp
-			src/smfsm/spot_micro_walk.cpp
+  src/smfsm/spot_micro_state.cpp 
+  src/smfsm/spot_micro_idle.cpp
+  src/smfsm/spot_micro_stand.cpp
+	src/smfsm/spot_micro_transition_stand.cpp
+	src/smfsm/spot_micro_transition_idle.cpp
+	src/smfsm/spot_micro_walk.cpp
+  src/smfsm/spot_micro_transition_pee.cpp
+  src/smfsm/spot_micro_pee.cpp
 )
 
 target_link_libraries(smfsm
-		spot_micro_kinematics
+	spot_micro_kinematics
 )
 
 ## Add cmake target dependencies of the library

@@ -26,6 +26,9 @@ struct SpotMicroNodeConfig {
   float stand_back_x_offset;
   float lie_down_height;
   float lie_down_feet_x_offset;
+  float pee_x_offset;
+  float pee_y_offset;
+  float pee_z_offset;
   int num_servos;
   float servo_max_angle_deg;
   std::map<std::string, std::map<std::string, float>> servo_config;
@@ -103,6 +106,9 @@ class SpotMicroMotionCmd
   // Returns leg positions representing a lieing down stance
   smk::LegsFootPos getLieDownStance();
 
+  // Returns leg positions representing a peeing stance
+  smk::LegsFootPos getPeeStance();
+
   // Manually override and command idle mode, used for shutdown
   void commandIdle();
 
@@ -159,6 +165,7 @@ class SpotMicroMotionCmd
   ros::Subscriber stand_sub_; // ros subscriber handle for stand_cmd topic
   ros::Subscriber idle_sub_; // ros subscriber handle for idle_cmd topic
   ros::Subscriber walk_sub_;
+  ros::Subscriber pee_sub_;
   ros::Subscriber vel_cmd_sub_;
   ros::Subscriber body_angle_cmd_sub_;
   ros::Publisher servos_absolute_pub_;
@@ -188,6 +195,9 @@ class SpotMicroMotionCmd
 
   // Callback method for walk command
   void walkCommandCallback(const std_msgs::Bool::ConstPtr& msg);
+
+  // Callback method for pee command
+  void peeCommandCallback(const std_msgs::Bool::ConstPtr& msg);
 
   // Callback method for angle command
   void angleCommandCallback(const geometry_msgs::Vector3ConstPtr& msg);
